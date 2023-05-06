@@ -41,17 +41,26 @@ async function onPageLoad() {
 	}
 }
 
+const selectCard = (classNames, target, backgroundColor) => {
+	const resetBackgroundToWhite = (el) => el.style.backgroundColor = 'white'
+	const elements = document.getElementsByClassName(classNames)
+	Array.from(elements).forEach(resetBackgroundToWhite)
+	target.style.backgroundColor = backgroundColor
+}
+
 function setupClickHandlers() {
 	document.addEventListener('click', function (event) {
 		const { target } = event
 
 		// Race track form field
 		if (target.matches('.card.track') || target.matches('.track-details')) {
+			selectCard('card track', target.matches('.card.track') ? target : target.parentElement, '#26c9b2')
 			return handleSelectTrack(target.matches('.card.track') ? target : target.parentElement)
 		}
 
 		// Podracer form field
 		if (target.matches('.card.podracer') || target.matches('.podracer-details')) {
+			selectCard('card podracer', target.matches('.card.podracer') ? target : target.parentElement, '#b5b5ff')
 			return handleSelectPodRacer(target.matches('.card.podracer') ? target : target.parentElement)
 		}
 
