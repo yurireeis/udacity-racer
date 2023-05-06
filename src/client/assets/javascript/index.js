@@ -14,6 +14,12 @@ let store = {
 	race_status: RACE_STATUS.UNSTARTED
 }
 
+const enableAccelerateButton = (disabled) => {
+	const el = document.getElementById('gas-peddle')
+	el.style.backgroundColor = disabled ? "green" : "darkgray"
+	el.style.borderColor = disabled ? "rgb(14, 166, 6);" : "#c7a9a9;"
+}
+
 // We need our javascript to wait until the DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
 	onPageLoad()
@@ -120,7 +126,9 @@ async function handleCreateRace() {
 
 	// The race has been created, now start the countdown
 	// TODO - call the async function runCountdown
+	enableAccelerateButton(false)
 	await runCountdown()
+	enableAccelerateButton(true)
 
 	// TODO - call the async function startRace
 	await startRace(currentRaceId)
@@ -131,7 +139,7 @@ async function handleCreateRace() {
 	await runRace(currentRaceId)
 }
 
-const raceInfo = async (id) => {
+const raceInfo = async (id, raceInterval) => {
 	const { status, progress, positions } = await getRace(id)
 	/* 
 		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
@@ -161,11 +169,14 @@ const raceInfo = async (id) => {
 }
 
 function runRace(raceID) {
-	return new Promise(resolve => {
+	let raceInterval
+
+	return new Promise((resolve, reject) => {
 		// TODO - use Javascript's built in setInterval method to get race info every 500ms
-		setInterval(raceInfo, 500, raceID)
-	})
-		.catch((err => errorHandler("something wrong happened with your run race attempt", err)))
+		raceInterval = setInterval((id) => {
+			raceInfo(id, raceInterval)
+		}, 500, raceID)
+	}).catch((err => errorHandler("something wrong happened with your run race attempt", err)))
 	// remember to add error handling for the Promise
 }
 
@@ -447,11 +458,7 @@ const accelerate = async (raceId) => {
 	// no body or datatype needed for this request
 	try {
 		const url = `${SERVER}/api/races/${raceId}/accelerate`
-		const response = await fetch(url, {
-			method: 'POST',
-			...defaultFetchOpts(),
-		})
-		return response.json()
+		await fetch(url, { method: 'POST', ...defaultFetchOpts() })
 	} catch (error) {
 		errorHandler("something wrong happened with accelerate attempt", error)
 	}
