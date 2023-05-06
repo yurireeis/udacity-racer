@@ -46,13 +46,13 @@ function setupClickHandlers() {
 		const { target } = event
 
 		// Race track form field
-		if (target.matches('.card.track')) {
-			handleSelectTrack(target)
+		if (target.matches('.card.track') || target.matches('.track-details')) {
+			return handleSelectTrack(target.matches('.card.track') ? target : target.parentElement)
 		}
 
 		// Podracer form field
-		if (target.matches('.card.podracer')) {
-			handleSelectPodRacer(target)
+		if (target.matches('.card.podracer') || target.matches('.podracer-details')) {
+			return handleSelectPodRacer(target.matches('.card.podracer') ? target : target.parentElement)
 		}
 
 		// Submit create race form
@@ -60,12 +60,12 @@ function setupClickHandlers() {
 			event.preventDefault()
 
 			// start race
-			handleCreateRace()
+			return handleCreateRace()
 		}
 
 		// Handle acceleration click
 		if (target.matches('#gas-peddle')) {
-			handleAccelerate()
+			return handleAccelerate()
 		}
 
 	}, false)
@@ -249,10 +249,10 @@ function renderRacerCard(racer) {
 
 	return `
 		<li class="card podracer" id="${id}">
-			<h3>${driver_name}</h3>
-			<p>${top_speed}</p>
-			<p>${acceleration}</p>
-			<p>${handling}</p>
+			<h3 class="podracer-details">${driver_name}</h3>
+			<p class="podracer-details">${top_speed}</p>
+			<p class="podracer-details">${acceleration}</p>
+			<p class="podracer-details">${handling}</p>
 		</li>
 	`
 }
@@ -278,7 +278,7 @@ function renderTrackCard(track) {
 
 	return `
 		<li id="${id}" class="card track">
-			<h3>${name}</h3>
+			<h3 class="track-details">${name}</h3>
 		</li>
 	`
 }
